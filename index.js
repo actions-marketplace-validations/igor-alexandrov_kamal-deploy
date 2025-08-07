@@ -25,15 +25,20 @@ function addCommandParameters(command, environment, configFile) {
 
 async function run() {
   try {
-    const registryUsername = core.getInput('registry-username', { required: true });
-    const registryPassword = core.getInput('registry-password', { required: true });
+    const registryUsername = core.getInput('registry-username');
+    const registryPassword = core.getInput('registry-password');
     const workdir = core.getInput('workdir');
     const kamal = core.getInput('kamal');
     const environment = core.getInput('environment');
     const configFile = core.getInput('config-file');
 
-    core.exportVariable('KAMAL_REGISTRY_USERNAME', registryUsername);
-    core.exportVariable('KAMAL_REGISTRY_PASSWORD', registryPassword);
+    // Only export registry credentials if they are provided
+    if (registryUsername) {
+      core.exportVariable('KAMAL_REGISTRY_USERNAME', registryUsername);
+    }
+    if (registryPassword) {
+      core.exportVariable('KAMAL_REGISTRY_PASSWORD', registryPassword);
+    }
     core.exportVariable('DOCKER_BUILDKIT', 1);
 
     // Build the deploy command args as an array
