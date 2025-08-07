@@ -4,10 +4,10 @@ description: GitHub Action to build and deploy Docker image with Kamal
 inputs:
   registry-username:
     description: 'Registry username'
-    required: true
+    required: false
   registry-password:
     description: 'Registry password'
-    required: true
+    required: false
   workdir:
     description: 'The working directory where Kamal will be executed'
     required: false

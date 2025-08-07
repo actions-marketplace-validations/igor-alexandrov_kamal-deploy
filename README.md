@@ -19,8 +19,8 @@ This GitHub Action deploys your application using Kamal and handles cancellation
 
 | Name                     | Description                                                | Required | Default     |
 |--------------------------|------------------------------------------------------------|----------|-------------|
-| `registry-username`| Registry Username (e.g., Digital Ocean Access Token) | Yes      |             |
-| `registry-password`| Registry Password (e.g., Digital Ocean Access Token) | Yes      |             |
+| `registry-username`| Registry Username (e.g., Digital Ocean Access Token) | No       |             |
+| `registry-password`| Registry Password (e.g., Digital Ocean Access Token) | No       |             |
 | `workdir`                | The working directory from which Kamal should be executed. | No       | `.`          |
 | `kamal`             | Path to the Kamal binary file.                             | No       | `./bin/kamal` |
 | `environment`            | Optional deployment environment (e.g., `production`, `staging`). If omitted, the `--destination` flag is not passed. | No       | None        |
@@ -28,7 +28,7 @@ This GitHub Action deploys your application using Kamal and handles cancellation
 
 ## Usage
 
-> **Note:** Only `registry-username` and `registry-password` are required. Any other necessary configuration, such as `DATABASE_URL`, `REDIS_URL`, and `RAILS_MASTER_KEY`, should be provided as environment variables in the workflow file.
+> **Note:** All inputs are optional. Registry credentials (`registry-username` and `registry-password`) can be omitted if storing secrets anywhere except to GitHub Secrets (e.g. 1Password or LastPass). Any other necessary configuration, such as `DATABASE_URL`, `REDIS_URL`, and `RAILS_MASTER_KEY`, should be provided as environment variables in the workflow file.
 
 ```yaml
 steps:
@@ -36,8 +36,8 @@ steps:
     uses: igor-alexandrov/kamal-deploy@v0.4.1
     with:
       # environment: 'staging'  # Optional, only used if provided
-      registry-username: ${{ secrets.KAMAL_REGISTRY_USERNAME }}
-      registry-password: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
+      registry-username: ${{ secrets.KAMAL_REGISTRY_USERNAME }} # Optional
+      registry-password: ${{ secrets.KAMAL_REGISTRY_PASSWORD }} # Optional
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       REDIS_URL: ${{ secrets.REDIS_URL }}
