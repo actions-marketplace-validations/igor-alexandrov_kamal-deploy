@@ -27541,40 +27541,66 @@ module.exports = parseParams
 var __webpack_exports__ = {};
 const core = __nccwpck_require__(1452);
 const exec = __nccwpck_require__(9204);
+const path = __nccwpck_require__(6928);
+
+/**
+ * Add common command parameters based on environment and config settings
+ * @param {string[]} command - The command array to add parameters to
+ * @param {string} environment - The environment parameter value
+ * @param {string} configFile - The config file parameter value
+ * @returns {string[]} - The updated command array
+ */
+function addCommandParameters(command, environment, configFile) {
+  // Add the `--destination` flag if environment is provided
+  if (environment) {
+    command.push(`--destination=${environment}`);
+  }
+
+  // Add the `--config-file` flag if configFile is provided
+  if (configFile) {
+    command.push(`--config-file=${configFile}`);
+  }
+
+  return command;
+}
 
 async function run() {
   try {
+    const registryUsername = core.getInput('registry-username');
+    const registryPassword = core.getInput('registry-password');
+    const workdir = core.getInput('workdir');
+    const kamal = core.getInput('kamal');
     const environment = core.getInput('environment');
-    const registryUsername = core.getInput('registry-username', { required: true });
-    const registryPassword = core.getInput('registry-password', { required: true });
+    const configFile = core.getInput('config-file');
 
-    core.exportVariable('KAMAL_REGISTRY_USERNAME', registryUsername);
-    core.exportVariable('KAMAL_REGISTRY_PASSWORD', registryPassword);
+    // Only export registry credentials if they are provided
+    if (registryUsername) {
+      core.exportVariable('KAMAL_REGISTRY_USERNAME', registryUsername);
+    }
+    if (registryPassword) {
+      core.exportVariable('KAMAL_REGISTRY_PASSWORD', registryPassword);
+    }
     core.exportVariable('DOCKER_BUILDKIT', 1);
 
     // Build the deploy command args as an array
-    const deployCommand = ['deploy'];
+    let deployCommand = ['deploy'];
+    deployCommand = addCommandParameters(deployCommand, environment, configFile);
 
-    // Add the `--destination` flag if environment is provided
-    if (environment) {
-      deployCommand.push(`--destination=${environment}`);
-    }
+    // Use the provided workdir
+    const cwd = path.resolve(workdir);
 
     // Execute the deployment command
-    await exec.exec('./bin/kamal', deployCommand);
+    await exec.exec(kamal, deployCommand, { cwd });
 
     // Handle cancellation
     process.on('SIGINT', async () => {
       core.warning('Action canceled, releasing resources...');
       try {
-        const lockCommand = ['lock', 'release'];
+        // Build the lock command args as an array
+        let lockCommand = ['lock', 'release'];
+        lockCommand = addCommandParameters(lockCommand, environment, configFile);
 
-        // Add the `--destination` flag if environment is provided
-        if (environment) {
-          lockCommand.push(`--destination=${environment}`);
-        }
-
-        await exec.exec('./bin/kamal', lockCommand);
+        await exec.exec(kamal, lockCommand, { cwd });
         core.info('Kamal lock released successfully.');
       } catch (error) {
         core.setFailed(`Failed to release Kamal lock: ${error.message}`);
