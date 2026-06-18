@@ -25,6 +25,7 @@ This GitHub Action deploys your application using Kamal and handles cancellation
 | `kamal`             | Path to the Kamal binary file.                             | No       | `./bin/kamal` |
 | `environment`            | Optional deployment environment (e.g., `production`, `staging`). If omitted, the `--destination` flag is not passed. | No       | None        |
 | `config-file` | Path to the Kamal config file. If omitted, the `--config-file` flag is not passed. | No       | `./config/deploy.yml`        |
+| `skip-push`              | Skip image build and push, deploying an already pushed image. When `true`, passes `--skip-push` to `kamal deploy`. | No       | `false`        |
 
 ## Usage
 

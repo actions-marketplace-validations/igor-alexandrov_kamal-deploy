@@ -31,6 +31,7 @@ async function run() {
     const kamal = core.getInput('kamal');
     const environment = core.getInput('environment');
     const configFile = core.getInput('config-file');
+    const skipPush = core.getBooleanInput('skip-push');
 
     // Only export registry credentials if they are provided
     if (registryUsername) {
@@ -44,6 +45,11 @@ async function run() {
     // Build the deploy command args as an array
     let deployCommand = ['deploy'];
     deployCommand = addCommandParameters(deployCommand, environment, configFile);
+
+    // Add the `--skip-push` flag to deploy an already pushed image
+    if (skipPush) {
+      deployCommand.push('--skip-push');
+    }
 
     // Use the provided workdir
     const cwd = path.resolve(workdir);
