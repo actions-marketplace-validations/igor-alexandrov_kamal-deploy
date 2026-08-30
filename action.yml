@@ -28,6 +28,10 @@ inputs:
     description: 'Path to the Kamal configuration file'
     required: false
     default: './config/deploy.yml'
+  skip-push:
+    description: 'Skip image build and push, deploy an already pushed image (passes --skip-push to `kamal deploy`)'
+    required: false
+    default: 'false'
 
 runs:
   using: 'node24'
